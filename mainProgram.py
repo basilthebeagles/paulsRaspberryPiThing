@@ -7,6 +7,8 @@ import keypad
 currentMenu = 0
 
 def main():
+    #this is the 'main' function, when the user presses something on the device they go to a differnt menu, when they need
+    #to change menu the function of the menu they are using returns the correct value for the menu they want to move to
     while True:
         global currentMenu
         if currentMenu == 0:
@@ -23,12 +25,17 @@ def main():
         
 
 def home():
+    #This is the home menu, the program starts here
+    #This menu is essentially a gateway to other menus and their functions
+    
     while True:
         print("should not be here")
         lcd.display("PRICE: * NEW: 0", 0)
         lcd.display("EDIT: #", 1)
-
+        #gets the users choice
         choice = keypad.getKey()
+        #returns the value associated with the desired menu, so the main function can change to
+        #that menu
         if choice == "*":
             return 1
         elif choice == "#":
@@ -42,6 +49,9 @@ def home():
             print("")
         
 def priceOrderer(price, mode):
+    #this function takes in a unformated price, for example 199
+    #and then returns it formated like: $1.99
+    #It has 2 different modes
     tempPriceArray = list(price)
     finalPrice = ""
     if mode != 1:
@@ -150,7 +160,7 @@ def barcodeInput():
             return serialNumber
             
         else:
-            print("barcode")
+            print("serialNumber")
             print(serialNumber)
             serialNumber += str(key)
             lcd.display(str(serialNumber), 0)
