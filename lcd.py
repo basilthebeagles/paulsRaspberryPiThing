@@ -73,6 +73,7 @@ def init():
   
 
 def GPIOSetup():
+ #This function set's the gpio mode and sets pins as out
   GPIO.setmode(GPIO.BOARD)       
   GPIO.setup(LCD_E, GPIO.OUT)  # E
   GPIO.setup(LCD_RS, GPIO.OUT) # RS
@@ -80,9 +81,11 @@ def GPIOSetup():
   GPIO.setup(LCD_D5, GPIO.OUT) # DB5
   GPIO.setup(LCD_D6, GPIO.OUT) # DB6
   GPIO.setup(LCD_D7, GPIO.OUT) # DB7
+
 def lcd_init():
   time.sleep(2)
   # Initialise display
+  #the delays are needed for the lcd to start correctly
   lcd_byte(0x33,LCD_CMD)
   time.sleep(0.02)
   lcd_byte(0x32,LCD_CMD)
@@ -96,8 +99,9 @@ def lcd_init():
   lcd_byte(0x01,LCD_CMD)  
   time.sleep(0.06) 
 def display(message, row):
-  # Send string to display
-  
+  #Function is used to send a string to the display
+  #row 0 means the text will be printed on the first line
+  #row 1 means the text will be printed on the 2nd
   if row == 0:
     lcd_byte(LCD_LINE_1, LCD_CMD)
  
