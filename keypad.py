@@ -29,7 +29,7 @@ KEYPAD = [
 ROW         = [15,18,32,11] 
 COLUMN      = [13,16,12]
 lastKey = ""     
-   
+#set it so the gpio's are referenced by their boardnumber   
 GPIO.setmode(GPIO.BOARD)
      
     
