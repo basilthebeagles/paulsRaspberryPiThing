@@ -5,7 +5,7 @@ import time
 import keypad
 
 currentMenu = 0
-
+#A BARCODE AND A SERIAL NUMBER ARE THE SAME THING
 def main():
     #this is the 'main' function, when the user presses something on the device they go to a differnt menu, when they need
     #to change menu the function of the menu they are using returns the correct value for the menu they want to move to
@@ -17,7 +17,7 @@ def main():
             currentMenu = priceGet(False)
         elif currentMenu == 2:
             print("Now Editing")
-            currentMenu = edit("why not worky")
+            currentMenu = edit()
         elif currentMenu == 3:
             currentMenu = newItem()
         #time.sleep(1)
@@ -51,9 +51,11 @@ def home():
 def priceOrderer(price, mode):
     #this function takes in a unformated price, for example 199
     #and then returns it formated like: $1.99
-    #It has 2 different modes
-    tempPriceArray = list(price)
-    finalPrice = ""
+    #It has 2 different modes, when mode is 0 a price of 080 would be converted to 80p
+    #when mode is 1 it will be converted to $0.80
+    tempPriceArray = list(price) #the price string is turned in to an array of characters as it allows me
+    #to add a certain digit in the price string to a certain place, for example betweem a $ and a . easier
+    finalPrice = "" #this is what is eventuly returned/displayed
     if mode != 1:
         if len(tempPriceArray) == 1:
             finalPrice = price
@@ -100,18 +102,30 @@ def priceOrderer(price, mode):
         
         lcd.display("BACK: *", 1)    
     return finalPrice
+    
 def priceGet(modulus):
+    #this function can act as its own "menu", or it can be used by other "menus" to return theprice of an item, for example if I wanted 
+    #to get the price of something i would use this menu, if I wanted to edit the price I would use the edit menu,
+    #which would call this function to get the price to show you before you change it.
+    #if modulus is true then it returns the price
+    #otherwise it displays it on the screen and acts as its own menu
+    
+    
     print("At price get")
+    #calls the barcodeInput function to get the serialNumber of the item whos price is wanted
     serialNumber = barcodeInput()
-    if serialNumber == False:
+    if serialNumber == False: #false will be returned from the barcodeInput function if the user wants to go back
+    #so, if priceGet is being used in a not modulus fashion it will return 0 to main, taking us back to the main menu
+    #otherwise it will return 0, 0 to the menu that called it and that menu will decide what to do with it
+    #specifically
         if modulus:
             return 0, 0
         else:
-            return 0
-    price = model.getPrice(serialNumber)
+            return 0 #
+    price = model.getPrice(serialNumber)#This searches the database for the serialNumber the user has inputed
     
 
-    if price == False:
+    if price == False: #false will be returned if the barcode does not exist
         lcd.display("Barcode not", 0)
         lcd.display("recognised", 1)
         time.sleep(2)
@@ -121,19 +135,20 @@ def priceGet(modulus):
         else:
             return 0
     price = str(price)
-    finalPrice = priceOrderer(price, 0)
+    finalPrice = priceOrderer(price, 0)#orders the returned price, uses mode 0 as in this case we would prefer 60p to $0.60
+    
     if modulus == False:
         
         
-        lcd.display("PRICE: "+finalPrice, 0)
+        lcd.display("PRICE: "+finalPrice, 0) #displays the price
             
         lcd.display("BACK: *", 1)
         print(finalPrice)
-        while True:
+        while True:#waits for the user to press *, so they can return to the main menu
             key = keypad.getKey()
             if key == "*":
                 return 0
-    if modulus == True:
+    if modulus == True: #or returns the price to the function that called it
         
         
         return finalPrice, serialNumber 
@@ -149,24 +164,29 @@ def barcodeInput():
     
     while True:
         print("inputing Now")
-        key = keypad.getKey()
-        if key == "*":
-            if len(serialNumber) == 0:
+        key = keypad.getKey()#gets the what key is pressed one by one
+        
+        if key == "*":#this little bit here allows 2 things, if the user had accidently pressed the wrong key they can press *
+        #to delete it
+            if len(serialNumber) == 0:#or, if the everything has been deleted and they press * again it means they
+            #want to go back so False is returned, so the function in use can handle that
                 return False
-            serialNumber = serialNumber[:-1]
-            lcd.display(str(serialNumber), 0)
+            serialNumber = serialNumber[:-1]#subtracts 1 character from the barcode
+            lcd.display(str(serialNumber), 0)#and displays the new barcode
             
-        elif key == "#":
-            return serialNumber
+        elif key == "#":#this is an enter key essentially
+        #when the user presses this it means they have entered all the digits of the barcode
+            return serialNumber 
             
         else:
+            
             print("serialNumber")
             print(serialNumber)
-            serialNumber += str(key)
-            lcd.display(str(serialNumber), 0)
+            serialNumber += str(key)#adds the key that has been entered to the serial number
+            lcd.display(str(serialNumber), 0)#prints the barcode as it is being entered, so the user can see
         
-def edit(tempError):
-    print(tempError)
+def edit():
+    
     print("At Edit")
 
     
